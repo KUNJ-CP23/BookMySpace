@@ -1,0 +1,23 @@
+# IDE
+.idea/
+.vscode/
+
+# Build output
+bin/
+obj/
+
+# User-specific
+*.user
+*.suo
+
+# macOS Finder file
+.DS_Store
+
+# EF Core local database files
+*.db
+*.db-shm
+*.db-wal
+
+# Secrets - DO NOT COMMIT
+appsettings.Development.json
+secrets.json
