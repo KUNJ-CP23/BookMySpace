@@ -13,6 +13,16 @@ public class BookingsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
         => Ok(await _db.Bookings.ToListAsync());
+    
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var booking = await _db.Bookings.FindAsync(id);
+        if (booking == null)
+            return NotFound();
+
+        return Ok(booking);
+    }
 
     [HttpPost]
     public async Task<IActionResult> Create(AddUpdateBookingDTO dto)
@@ -32,18 +42,8 @@ public class BookingsController : ControllerBase
         return Ok(b);
     }
     
-    // GET api/bookings/5
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
-    {
-        var booking = await _db.Bookings.FindAsync(id);
-        if (booking == null)
-            return NotFound();
+    
 
-        return Ok(booking);
-    }
-
-    // PUT api/bookings/5
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, AddUpdateBookingDTO dto)
     {

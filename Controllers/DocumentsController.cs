@@ -13,6 +13,16 @@ public class DocumentsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
         => Ok(await _db.Documents.ToListAsync());
+    
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var doc = await _db.Documents.FindAsync(id);
+        if (doc == null)
+            return NotFound();
+
+        return Ok(doc);
+    }
 
     [HttpPost]
     public async Task<IActionResult> Create(AddUpdateDocumentDTO dto)
@@ -28,18 +38,7 @@ public class DocumentsController : ControllerBase
         await _db.SaveChangesAsync();
         return Ok(d);
     }
-    // GET api/documents/5
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
-    {
-        var doc = await _db.Documents.FindAsync(id);
-        if (doc == null)
-            return NotFound();
-
-        return Ok(doc);
-    }
-
-    // PUT api/documents/5
+    
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, AddUpdateDocumentDTO dto)
     {

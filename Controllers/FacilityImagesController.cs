@@ -10,11 +10,11 @@ public class FacilityImagesController : ControllerBase
     private readonly AppDbContext _db;
     public FacilityImagesController(AppDbContext db) => _db = db;
 
+    //below -> anonymous function
     [HttpGet]
     public async Task<IActionResult> GetAll()
         => Ok(await _db.FacilityImages.ToListAsync());
-
-    // GET: api/facilityimages/5
+    
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -24,8 +24,20 @@ public class FacilityImagesController : ControllerBase
 
         return Ok(img);
     }
+    
+    [HttpPost]
+    public async Task<IActionResult> Create(AddUpdateFacilityImageDTO dto)
+    {
+        var img = new FacilityImage
+        {
+            FacilityId = dto.FacilityId,
+            ImageUrl = dto.ImageUrl
+        };
+        _db.FacilityImages.Add(img);
+        await _db.SaveChangesAsync();
+        return Ok(img);
+    }
 
-    // PUT: api/facilityimages/5
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, AddUpdateFacilityImageDTO dto)
     {
@@ -40,21 +52,6 @@ public class FacilityImagesController : ControllerBase
         return Ok(img);
     }
     
-    //POST 
-    [HttpPost]
-    public async Task<IActionResult> Create(AddUpdateFacilityImageDTO dto)
-    {
-        var img = new FacilityImage
-        {
-            FacilityId = dto.FacilityId,
-            ImageUrl = dto.ImageUrl
-        };
-        _db.FacilityImages.Add(img);
-        await _db.SaveChangesAsync();
-        return Ok(img);
-    }
-    
-    //DELETE
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {

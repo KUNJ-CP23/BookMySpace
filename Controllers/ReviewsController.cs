@@ -13,6 +13,16 @@ public class ReviewsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
         => Ok(await _db.Reviews.ToListAsync());
+    
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var review = await _db.Reviews.FindAsync(id);
+        if (review == null)
+            return NotFound();
+
+        return Ok(review);
+    }
 
     [HttpPost]
     public async Task<IActionResult> Create(AddUpdateReviewDTO dto)
@@ -30,18 +40,6 @@ public class ReviewsController : ControllerBase
         return Ok(r);
     }
 
-    // GET api/reviews/5
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
-    {
-        var review = await _db.Reviews.FindAsync(id);
-        if (review == null)
-            return NotFound();
-
-        return Ok(review);
-    }
-
-    // PUT api/reviews/5
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, AddUpdateReviewDTO dto)
     {
