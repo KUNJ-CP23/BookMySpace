@@ -60,12 +60,21 @@ namespace BookMySpace.Models
 
 public class AddUpdateFacilityDTO
 {
+    [Required]
     public int UserId { get; set; }
+    [Required, MaxLength(150)]
     public string Name { get; set; }
+    [MaxLength(20)]
     public string Contact { get; set; }
+    [MaxLength(500)]
     public string Description { get; set; }
+    [Required, MaxLength(100)]
     public string City { get; set; }
+
+    [MaxLength(300)]
     public string Address { get; set; }
+
+    [Required, MaxLength(50)]
     public string Category { get; set; }
     public decimal PricePerHour { get; set; }
     public bool IsGovOwned { get; set; }
