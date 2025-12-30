@@ -17,5 +17,6 @@ namespace BookMySpace.Models
 }
 public class AddUpdateRoleDTO
 {
+    [Required, MaxLength(50)]
     public string RoleName { get; set; }
 }

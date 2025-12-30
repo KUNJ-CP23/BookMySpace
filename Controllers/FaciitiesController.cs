@@ -27,7 +27,7 @@ public class FacilitiesController : ControllerBase
     {
         var f = new Facility
         {
-            UserId = dto.OwnerId,
+            UserId = dto.UserId,
             Name = dto.Name,
             Contact = dto.Contact,
             Description = dto.Description,
@@ -49,7 +49,7 @@ public class FacilitiesController : ControllerBase
         var f = await _db.Facilities.FindAsync(id);
         if (f == null) return NotFound();
 
-        f.UserId = dto.OwnerId;
+        f.UserId = dto.UserId;
         f.Name = dto.Name;
         f.Contact = dto.Contact;
         f.Description = dto.Description;

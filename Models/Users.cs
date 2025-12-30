@@ -40,9 +40,15 @@ namespace BookMySpace.Models
 
 public class AddUpdateUserDTO
 {
+    [Required, MaxLength(100)]
     public string FullName { get; set; }
+
+    [Required, MaxLength(200)]
     public string Email { get; set; }
+    [Required]
     public string Password { get; set; }
+    [ForeignKey(nameof(RoleId))]
     public int RoleId { get; set; }
+    [MaxLength(20)]
     public string Phone { get; set; }
 }
