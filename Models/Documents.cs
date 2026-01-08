@@ -29,10 +29,10 @@ namespace BookMySpace.Models
 
 public class AddUpdateDocumentDTO
 {
-    [Required]
+    // [Required]
     public int FacilityId { get; set; }
-    [Required, MaxLength(100)]
+    // [Required, MaxLength(100)]
     public string DocumentType { get; set; }
-    [Required, MaxLength(500)]
+    // [Required, MaxLength(500)]
     public string FileUrl { get; set; }
 }

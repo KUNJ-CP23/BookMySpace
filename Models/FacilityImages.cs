@@ -22,8 +22,8 @@ namespace BookMySpace.Models
 
 public class AddUpdateFacilityImageDTO
 {
-    [Required]
+    // [Required]
     public int FacilityId { get; set; }
-    [Required, MaxLength(500)]
+    // [Required, MaxLength(500)]
     public string ImageUrl { get; set; }
 }

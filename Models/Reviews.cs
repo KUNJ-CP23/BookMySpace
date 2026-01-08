@@ -34,12 +34,12 @@ namespace BookMySpace.Models
 
 public class AddUpdateReviewDTO
 {
-    [Required]
+    // [Required]
     public int FacilityId { get; set; }
-    [Required]
+    // [Required]
     public int UserId { get; set; }
-    [Range(1, 5)]
+    // [Range(1, 5)]
     public int Rating { get; set; }
-    [MaxLength(500)]
+    // [MaxLength(500)]
     public string Comment { get; set; }
 }

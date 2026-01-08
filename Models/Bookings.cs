@@ -50,16 +50,16 @@ namespace BookMySpace.Models
 
 public class AddUpdateBookingDTO
 {
-    [Required]
+    // [Required]
     public int FacilityId { get; set; }
-    [Required]
+    // [Required]
     public int UserId { get; set; }
-    [Required]
+    // [Required]
     public DateTime StartDate { get; set; }
-    [Required]
+    // [Required]
     public DateTime EndDate { get; set; }
-    [Required]
+    // [Required]
     public TimeSpan StartTime { get; set; }
-    [Required]
+    // [Required]
     public TimeSpan EndTime { get; set; }
 }
