@@ -4,7 +4,7 @@ namespace BookMySpace.Services
 {
     public interface IFileService
     {
-        Task<string> UploadImageAsync(IFormFile file, string subFolder);
+        Task<string> UploadFileAsync(IFormFile file, string subFolder);
         void DeleteFile(string? relativePath);
     }
 
@@ -18,13 +18,13 @@ namespace BookMySpace.Services
             _basePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", _uploadsFolder);
         }
 
-        public async Task<string> UploadImageAsync(IFormFile file, string subFolder)
+        public async Task<string> UploadFileAsync(IFormFile file, string subFolder)
         {
             if (file == null || file.Length == 0)
                 throw new ArgumentException("File is empty");
 
             // ✅ Allow only images
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp", ".heic"};
             var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
 
             if (!allowedExtensions.Contains(extension))
