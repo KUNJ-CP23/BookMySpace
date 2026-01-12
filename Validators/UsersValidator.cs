@@ -7,18 +7,18 @@ public class UserValidator : AbstractValidator<AddUpdateUserDTO>
     public UserValidator()
     {
         RuleFor(nameOfDto => nameOfDto.FullName)
-            .NotEmpty()
+            .NotEmpty().WithMessage("Full Name required che")
             .MaximumLength(100);
 
         RuleFor(nameOfDto => nameOfDto.Email)
-            .NotEmpty()
+            .NotEmpty().WithMessage("Email required che")
             .EmailAddress()
             .MaximumLength(200);
 
         RuleFor(nameOfDto => nameOfDto.Password)
             .NotEmpty()
             .MinimumLength(6);
-
+        
         RuleFor(nameOfDto => nameOfDto.RoleId)
             .GreaterThan(0);
 
