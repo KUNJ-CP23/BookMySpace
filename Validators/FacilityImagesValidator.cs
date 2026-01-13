@@ -15,9 +15,9 @@ public class FacilityImageValidator : AbstractValidator<AddUpdateFacilityImageDT
         //     .Must(url => Uri.IsWellFormedUriString(url, UriKind.Absolute))
         //     .WithMessage("Invalid image URL format");
         
-        RuleFor(nameOfDto => nameOfDto.ImageUrl)
-            .NotEmpty().WithMessage("Image URL is required")
-            .MaximumLength(500).WithMessage("Image URL cannot exceed 500 characters")
-            .Matches(@"^https?://").WithMessage("Image URL must start with http:// or https://");
+        // RuleFor(nameOfDto => nameOfDto.ImagePath)
+        //     .NotEmpty().WithMessage("Image URL is required")
+        //     .MaximumLength(500).WithMessage("Image URL cannot exceed 500 characters")
+        //     .Matches(@"^https?://").WithMessage("Image URL must start with http:// or https://");
     }
 }

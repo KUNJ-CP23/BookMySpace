@@ -1,6 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using BookMySpace.Data;
+using BookMySpace.Services;
+using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Identity;
+using BookMySpace.Validators;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,10 +25,20 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 //Register DBContext
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+
+// File service registration
+builder.Services.AddScoped<IFileService, FileService>();
+
+// Limit file upload size (e.g., 15MB) to prevent abuse
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 10 * 1024 * 1024; // 10 MiB
+});
 
 var app = builder.Build();
 
@@ -34,6 +49,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// Enable static files for serving uploads
+app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 
