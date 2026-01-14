@@ -17,6 +17,7 @@ namespace BookMySpace.Models
 
         [Required, MaxLength(500)]
         public string ImageUrl { get; set; }
+        
     }
 }
 
@@ -25,5 +26,6 @@ public class AddUpdateFacilityImageDTO
     // [Required]
     public int FacilityId { get; set; }
     // [Required, MaxLength(500)]
-    public string ImageUrl { get; set; }
+    // public string ImageUrl { get; set; }
+    public IFormFile? ImageFile { get; set; }
 }
