@@ -44,6 +44,13 @@ namespace BookMySpace.Models
         [Required, MaxLength(20)]
         public string BookingStatus { get; set; } = "Pending";
 
+        // neww added
+        [Required, MaxLength(20)]
+        public string PaymentMode { get; set; } = "Online";  // Online / Offline
+
+        [Required, MaxLength(20)]
+        public string PaymentStatus { get; set; } = "Unpaid"; // Unpaid / Paid
+
         public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }

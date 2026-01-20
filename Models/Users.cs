@@ -35,6 +35,8 @@ namespace BookMySpace.Models
         public ICollection<Facility> Facilities { get; set; }
         public ICollection<Booking> Bookings { get; set; }
         public ICollection<Review> Reviews { get; set; }
+        
+        public ICollection<Payment> Payments { get; set; }
     }
 }
 
