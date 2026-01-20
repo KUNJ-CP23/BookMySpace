@@ -16,6 +16,7 @@ namespace BookMySpace.Data
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Document> Documents { get; set; }
+        public DbSet<Payment> Payments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -58,6 +59,13 @@ namespace BookMySpace.Data
             //user delete thase to booking jaate delete nai thay
 
             //facility delete thase to booking delete
+            
+            modelBuilder.Entity<Payment>()
+                .HasOne(p => p.User)
+                .WithMany(u => u.Payments)
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.Restrict); // FIX (NO CASCADE)
+            
             // -----------------------
             // Seed Data Section
             // -----------------------
