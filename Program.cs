@@ -16,10 +16,22 @@ builder.Services.AddControllers()
         o.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
 
+// // ✅ MVC Views (for consuming API)
+// builder.Services.AddControllersWithViews();
 
-// Add services to the container.
 
-builder.Services.AddControllers();
+//Consuming api in react
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReact",
+        b =>
+        {
+            b.WithOrigins("http://localhost:5173")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -40,6 +52,12 @@ builder.Services.Configure<FormOptions>(options =>
     options.MultipartBodyLengthLimit = 10 * 1024 * 1024; // 10 MiB
 });
 
+// ✅ HttpClient + ApiClient
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<ApiClient>();
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -56,6 +74,13 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+app.UseCors("AllowReact");
 app.MapControllers();
+
+// // ✅ MVC UI routes
+// app.MapControllerRoute(
+//     name: "default",
+//     pattern: "{controller=Home}/{action=Index}/{id?}");
+
 
 app.Run();
