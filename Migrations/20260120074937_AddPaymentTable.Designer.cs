@@ -4,6 +4,7 @@ using BookMySpace.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookMySpace.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260120074937_AddPaymentTable")]
+    partial class AddPaymentTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,16 +50,6 @@ namespace BookMySpace.Migrations
                     b.Property<int>("FacilityId")
                         .HasColumnType("int");
 
-                    b.Property<string>("PaymentMode")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("PaymentStatus")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
@@ -82,12 +75,10 @@ namespace BookMySpace.Migrations
                         {
                             BookingId = 1,
                             BookingStatus = "Confirmed",
-                            CreatedAt = new DateTime(2026, 1, 20, 13, 57, 2, 632, DateTimeKind.Local).AddTicks(6200),
+                            CreatedAt = new DateTime(2026, 1, 20, 13, 19, 37, 450, DateTimeKind.Local).AddTicks(6930),
                             EndDate = new DateTime(2025, 2, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EndTime = new TimeSpan(0, 12, 0, 0, 0),
                             FacilityId = 1,
-                            PaymentMode = "Online",
-                            PaymentStatus = "Unpaid",
                             StartDate = new DateTime(2025, 2, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             StartTime = new TimeSpan(0, 10, 0, 0, 0),
                             TotalPrice = 3000m,
@@ -193,7 +184,7 @@ namespace BookMySpace.Migrations
                             Category = "Hall",
                             City = "Ahmedabad",
                             Contact = "9090909090",
-                            CreatedAt = new DateTime(2026, 1, 20, 13, 57, 2, 632, DateTimeKind.Local).AddTicks(6170),
+                            CreatedAt = new DateTime(2026, 1, 20, 13, 19, 37, 450, DateTimeKind.Local).AddTicks(6900),
                             Description = "A large AC hall for events and weddings.",
                             IsApproved = true,
                             IsGovOwned = false,
@@ -258,6 +249,7 @@ namespace BookMySpace.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("OfflineReferenceNumber")
+                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -280,10 +272,12 @@ namespace BookMySpace.Migrations
                         .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("Remarks")
+                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("TransactionId")
+                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -337,7 +331,7 @@ namespace BookMySpace.Migrations
                         {
                             ReviewId = 1,
                             Comment = "Great place, clean and spacious!",
-                            CreatedAt = new DateTime(2026, 1, 20, 13, 57, 2, 632, DateTimeKind.Local).AddTicks(6210),
+                            CreatedAt = new DateTime(2026, 1, 20, 13, 19, 37, 450, DateTimeKind.Local).AddTicks(6940),
                             FacilityId = 1,
                             Rating = 5,
                             UserId = 3
@@ -428,7 +422,7 @@ namespace BookMySpace.Migrations
                         new
                         {
                             UserId = 1,
-                            CreatedAt = new DateTime(2026, 1, 20, 13, 57, 2, 632, DateTimeKind.Local).AddTicks(6150),
+                            CreatedAt = new DateTime(2026, 1, 20, 13, 19, 37, 450, DateTimeKind.Local).AddTicks(6870),
                             Email = "admin@bookmyspace.com",
                             FullName = "System Admin",
                             IsActive = true,
@@ -439,7 +433,7 @@ namespace BookMySpace.Migrations
                         new
                         {
                             UserId = 2,
-                            CreatedAt = new DateTime(2026, 1, 20, 13, 57, 2, 632, DateTimeKind.Local).AddTicks(6150),
+                            CreatedAt = new DateTime(2026, 1, 20, 13, 19, 37, 450, DateTimeKind.Local).AddTicks(6880),
                             Email = "owner@bookmyspace.com",
                             FullName = "Facility Owner",
                             IsActive = true,
@@ -450,7 +444,7 @@ namespace BookMySpace.Migrations
                         new
                         {
                             UserId = 3,
-                            CreatedAt = new DateTime(2026, 1, 20, 13, 57, 2, 632, DateTimeKind.Local).AddTicks(6150),
+                            CreatedAt = new DateTime(2026, 1, 20, 13, 19, 37, 450, DateTimeKind.Local).AddTicks(6880),
                             Email = "customer@bookmyspace.com",
                             FullName = "Normal Customer",
                             IsActive = true,
