@@ -1,0 +1,23 @@
+@model List<BookMySpace.Models.FacilityImage>
+
+<h2>Facility Images</h2>
+
+<table border="1" cellpadding="8" cellspacing="0">
+    <thead>
+    <tr>
+        <th>ImageId</th>
+        <th>FacilityId</th>
+        <th>ImageUrl</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var img in Model)
+    {
+        <tr>
+            <td>@img.ImageId</td>
+            <td>@img.FacilityId</td>
+            <td>@img.ImageUrl</td>
+        </tr>
+    }
+    </tbody>
+</table>

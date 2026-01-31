@@ -1,0 +1,27 @@
+@model List<BookMySpace.Models.Document>
+
+<h2>Documents</h2>
+
+<table border="1" cellpadding="8" cellspacing="0">
+    <thead>
+    <tr>
+        <th>DocumentId</th>
+        <th>FacilityId</th>
+        <th>DocumentType</th>
+        <th>FileUrl</th>
+        <th>UploadedAt</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var d in Model)
+    {
+        <tr>
+            <td>@d.DocumentId</td>
+            <td>@d.FacilityId</td>
+            <td>@d.DocumentType</td>
+            <td>@d.FileUrl</td>
+            <td>@d.UploadedAt</td>
+        </tr>
+    }
+    </tbody>
+</table>

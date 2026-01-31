@@ -1,0 +1,37 @@
+@model List<BookMySpace.Models.Facility>
+
+<h2>Facilities</h2>
+
+<table border="1" cellpadding="8" cellspacing="0">
+    <thead>
+    <tr>
+        <th>FacilityId</th>
+        <th>UserId</th>
+        <th>Name</th>
+        <th>Contact</th>
+        <th>City</th>
+        <th>Category</th>
+        <th>PricePerHour</th>
+        <th>IsGovOwned</th>
+        <th>IsApproved</th>
+        <th>CreatedAt</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var f in Model)
+    {
+        <tr>
+            <td>@f.FacilityId</td>
+            <td>@f.UserId</td>
+            <td>@f.Name</td>
+            <td>@f.Contact</td>
+            <td>@f.City</td>
+            <td>@f.Category</td>
+            <td>@f.PricePerHour</td>
+            <td>@f.IsGovOwned</td>
+            <td>@f.IsApproved</td>
+            <td>@f.CreatedAt</td>
+        </tr>
+    }
+    </tbody>
+</table>

@@ -2,18 +2,22 @@ using BookMySpace.Data;
 using BookMySpace.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using BookMySpace.Services;
 
 [ApiController]
 [Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
     private readonly AppDbContext _db;
+    private readonly IAuthService _authService;
 
-    public UsersController(AppDbContext db)
+    public UsersController(AppDbContext db, IAuthService authService)
     {
         _db = db;
+        _authService = authService;
     }
-
+    
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
