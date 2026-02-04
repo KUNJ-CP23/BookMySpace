@@ -16,11 +16,23 @@ public class FacilityImagesController : ControllerBase
         _db = db;
         _fileService = fileService;
     }
-
-    //below -> anonymous function
     [HttpGet]
     public async Task<IActionResult> GetAll()
-        => Ok(await _db.FacilityImages.ToListAsync());
+    {
+        var images = await _db.FacilityImages
+            .Include(i => i.Facility)
+            .Select(i => new
+            {
+                i.ImageId,
+                i.ImageUrl,
+                i.FacilityId,
+                FacilityName = i.Facility.Name,
+                Category = i.Facility.Category
+            })
+            .ToListAsync();
+
+        return Ok(images);
+    }
     
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
