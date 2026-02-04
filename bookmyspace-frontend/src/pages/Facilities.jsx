@@ -15,6 +15,72 @@ export default function Facilities() {
     isGovOwned: false,
     userId: ""
   });
+  const startEditFacility = (f) => {
+    setEditFacilityId(f.facilityId);
+    setForm({
+      name: f.name || "",
+      contact: f.contact || "",
+      description: f.description || "",
+      city: f.city || "",
+      address: f.address || "",
+      category: f.category || "",
+      pricePerHour: f.pricePerHour || "",
+      isGovOwned: f.isGovOwned || false,
+      userId: f.userId || ""
+    });
+  };
+
+  const updateFacility = async () => {
+    try {
+      await API.put(`/Facilities/${editFacilityId}`, {
+        name: form.name,
+        contact: form.contact,
+        description: form.description,
+        city: form.city,
+        address: form.address,
+        category: form.category,
+        pricePerHour: parseFloat(form.pricePerHour),
+        isGovOwned: form.isGovOwned,
+        userId: parseInt(form.userId)
+      });
+
+      setEditFacilityId(null);
+      setForm({
+        name: "",
+        contact: "",
+        description: "",
+        city: "",
+        address: "",
+        category: "",
+        pricePerHour: "",
+        isGovOwned: false,
+        userId: ""
+      });
+
+      const res = await API.get("/Facilities");
+      setFacilities(res.data);
+
+    } catch (err) {
+      console.log("Update Facility Error", err.response?.data || err);
+      alert("Update failed");
+    }
+  };
+
+  const deleteFacility = async (id) => {
+    if (!window.confirm("Delete this facility?")) return;
+
+    try {
+      await API.delete(`/Facilities/${id}`);
+
+      const res = await API.get("/Facilities");
+      setFacilities(res.data);
+
+    } catch (err) {
+      console.log("Delete Facility Error", err.response?.data || err);
+      alert("Delete failed");
+    }
+  };
+
   const [editFacilityId, setEditFacilityId] = useState(null);
 
   useEffect(() => {
@@ -70,6 +136,8 @@ export default function Facilities() {
     }
   };
 
+
+
   return (
     <div style={{ padding: 20 }}>
       <h2>Facilities</h2>
@@ -102,7 +170,11 @@ export default function Facilities() {
         ))}
       </select>
 
-      <button onClick={addFacility}>Add Facility</button>
+      {editFacilityId ? (
+        <button onClick={updateFacility}>Update Facility</button>
+      ) : (
+        <button onClick={addFacility}>Add Facility</button>
+      )}
 
       {facilities.length === 0 ? (
         <p>No facilities found</p>
@@ -123,9 +195,23 @@ export default function Facilities() {
             <p><b>City:</b> {f.city}</p>
             <p><b>Address:</b> {f.address}</p>
             <p><b>Category:</b> {f.category}</p>
-            <p><b>Price / Hour:</b> ₹{f.pricePerHour}</p>
+            <p>
+              <b>Price / Hour:</b>{" "}
+              ₹{Number(f.pricePerHour).toLocaleString("en-IN")}
+            </p>
             <p><b>Ownership:</b> {f.isGovOwned ? "Government" : "Private"}</p>
             <p><b>UserId:</b> {f.userId}</p>
+
+            <button onClick={() => startEditFacility(f)} style={{ marginRight: 10, background: "yellow", color: "black"}}>
+              Edit
+            </button>
+
+            <button 
+              onClick={() => deleteFacility(f.facilityId)} 
+              style={{ background: "crimson", color: "white" }}
+            >
+              Delete
+            </button>
           </div>
         ))
       )}
