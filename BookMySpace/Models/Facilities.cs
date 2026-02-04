@@ -21,6 +21,7 @@ namespace BookMySpace.Models
         [Required]
         public int UserId { get; set; }
 
+        
         //aa niche User datatype atle che cuz it represents the whole User object
         [ForeignKey(nameof(UserId))]
         public User User { get; set; }
