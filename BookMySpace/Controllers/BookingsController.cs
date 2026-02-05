@@ -37,6 +37,9 @@ public class BookingsController : ControllerBase
     {
         //new-> Load facility to check IsGovOwned
         var facility = await _db.Facilities.FindAsync(dto.FacilityId);
+        
+        var duration = dto.EndTime - dto.StartTime;
+        var hours = duration.TotalHours;
         if (facility == null)
             return NotFound(new { message = "Facility not found" });
 
@@ -54,7 +57,7 @@ public class BookingsController : ControllerBase
             PaymentStatus = "Unpaid",
 
             // notecheck: TotalPrice should be calculated in logic (service/controller)
-            TotalPrice = 0
+            TotalPrice = (decimal)hours * facility.PricePerHour
         };
 
         _db.Bookings.Add(b);
