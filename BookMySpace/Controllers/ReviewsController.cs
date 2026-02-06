@@ -12,32 +12,63 @@ public class ReviewsController : ControllerBase
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
-        => Ok(await _db.Reviews.ToListAsync());
-    
+    {
+        var reviews = await _db.Reviews
+            .Include(r => r.User)
+            .Include(r => r.Facility)
+            .ToListAsync();
+
+        return Ok(reviews);
+    }
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
-        var review = await _db.Reviews.FindAsync(id);
+        var review = await _db.Reviews
+            .Include(r => r.User)
+            .Include(r => r.Facility)
+            .FirstOrDefaultAsync(r => r.ReviewId == id);
+
         if (review == null)
             return NotFound();
 
         return Ok(review);
     }
 
+    //aa m work karse k agar property select thay gai to je user a property use or book kari hase 
+    // a ne j review aapva dese, kem k in real life also use karya vagar kaay bolvu no joi
     [HttpPost]
     public async Task<IActionResult> Create(AddUpdateReviewDTO dto)
     {
-        var r = new Review
+        // Check if user has booked this facility before
+        bool hasBooking = await _db.Bookings.AnyAsync(b =>
+            b.UserId == dto.UserId &&
+            b.FacilityId == dto.FacilityId);   // or remove this line if no status logic yet
+
+        if (!hasBooking)
+            return BadRequest(new { message = "User cannot review a facility they have not booked." });
+
+        // Optional: Prevent multiple reviews by same user for same facility
+        bool alreadyReviewed = await _db.Reviews.AnyAsync(r =>
+            r.UserId == dto.UserId &&
+            r.FacilityId == dto.FacilityId);
+
+        if (alreadyReviewed)
+            return BadRequest(new { message = "User has already reviewed this facility." });
+
+        //Create Review
+        var review = new Review
         {
-            FacilityId = dto.FacilityId,
             UserId = dto.UserId,
+            FacilityId = dto.FacilityId,
             Rating = dto.Rating,
-            Comment = dto.Comment
+            Comment = dto.Comment,
+            CreatedAt = DateTime.Now
         };
 
-        _db.Reviews.Add(r);
+        _db.Reviews.Add(review);
         await _db.SaveChangesAsync();
-        return Ok(r);
+
+        return Ok(review);
     }
 
     [HttpPut("{id}")]
