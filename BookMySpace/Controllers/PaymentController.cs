@@ -40,6 +40,9 @@ public class PaymentsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(AddUpdatePaymentDTO dto)
     {
+        
+        // ✅ ADD THIS LINE (VERY IMPORTANT)
+        dto.OfflineReferenceNumber = null;
         var booking = await _db.Bookings
             .Include(b => b.Facility)
             .FirstOrDefaultAsync(b => b.BookingId == dto.BookingId);
@@ -81,6 +84,9 @@ public class PaymentsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, AddUpdatePaymentDTO dto)
     {
+        
+        // ✅ ADD THIS LINE (VERY IMPORTANT)
+        dto.OfflineReferenceNumber = null;
         var payment = await _db.Payments
             .Include(p => p.Booking)
             .ThenInclude(b => b.Facility)

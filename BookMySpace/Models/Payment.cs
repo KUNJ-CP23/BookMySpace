@@ -65,10 +65,10 @@ public class AddUpdatePaymentDTO
     public string PaymentMethod { get; set; }
 
     // Online only
-    public string TransactionId { get; set; }
+    public string? TransactionId { get; set; }
 
     // Offline only (Optional)
-    public string OfflineReferenceNumber { get; set; }
+    public string? OfflineReferenceNumber { get; set; }
 
     public string? Remarks { get; set; }
 }
