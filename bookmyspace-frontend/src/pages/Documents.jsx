@@ -47,6 +47,12 @@ export default function Documents() {
       documentType: "",
       file: null
     });
+
+    // 🔥 IMPORTANT FIX
+    if (fileRef.current) {
+      fileRef.current.value = "";
+    }
+
     setEditDocId(null);
   };
 
@@ -62,6 +68,9 @@ export default function Documents() {
 
       refreshDocs();
       resetForm();
+
+      // optional safety reset
+      if (fileRef.current) fileRef.current.value = "";
 
     } catch (err) {
       console.log("Add Document Error:", err.response?.data || err);
@@ -95,6 +104,8 @@ export default function Documents() {
 
       refreshDocs();
       resetForm();
+
+      if (fileRef.current) fileRef.current.value = "";
 
     } catch (err) {
       console.log("Update Error:", err.response?.data || err);

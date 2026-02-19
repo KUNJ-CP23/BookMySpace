@@ -34,5 +34,5 @@ public class AddUpdateDocumentDTO
     // [Required, MaxLength(100)]
     public string DocumentType { get; set; }
     // [Required, MaxLength(500)]
-    public string FileUrl { get; set; }
+    public IFormFile? File { get; set; }
 }
