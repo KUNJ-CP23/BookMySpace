@@ -9,7 +9,7 @@ public class ReviewsController : ControllerBase
 {
     private readonly AppDbContext _db;
     public ReviewsController(AppDbContext db) => _db = db;
-
+    
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -20,6 +20,7 @@ public class ReviewsController : ControllerBase
 
         return Ok(reviews);
     }
+    
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -70,7 +71,7 @@ public class ReviewsController : ControllerBase
 
         return Ok(review);
     }
-
+    
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, AddUpdateReviewDTO dto)
     {
