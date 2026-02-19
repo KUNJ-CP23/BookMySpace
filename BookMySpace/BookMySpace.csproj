@@ -22,4 +22,18 @@
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Views\BookingsUi\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\DocumentsUi\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\FacilitiesUi\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\FacilityImagesUi\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\ReviewsUi\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\RolesUi\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\RolesUi\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\RolesUi\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\RolesUi\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\RolesUi\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\UsersUi\Index.cshtml" />
+    </ItemGroup>
+
 </Project>
