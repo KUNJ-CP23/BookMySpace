@@ -32,7 +32,7 @@ public class AuthService : IAuthService
         {
             new Claim(ClaimTypes.Name, user.FullName),
             new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role.ToString()),
+            new Claim(ClaimTypes.Role, user.Role.RoleName), // ✅ FIXED
             new Claim("UserId", user.UserId.ToString())
         };
 
@@ -53,7 +53,8 @@ public class AuthService : IAuthService
     public async Task<object?> LoginAsync(string username, string password)
     {
         var user = await _context.Users
-            .FirstOrDefaultAsync(u => u.FullName == username && u.Password == password);
+            .Include(u => u.Role) // ✅ IMPORTANT (to get RoleName)
+            .FirstOrDefaultAsync(u => u.Email == username && u.Password == password); // ✅ FIXED
 
         if (user == null)
             return null;
@@ -68,7 +69,7 @@ public class AuthService : IAuthService
                 user.UserId,
                 user.FullName,
                 user.Email,
-                user.Role
+                Role = user.Role.RoleName // ✅ CLEAN ROLE
             }
         };
     }

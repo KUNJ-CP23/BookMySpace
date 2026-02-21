@@ -1,6 +1,8 @@
-namespace BookMySpace.Models;
-
-public class LoginDTO
+namespace BookMySpace.Models
 {
-    
+    public class LoginDTO
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+    }
 }
