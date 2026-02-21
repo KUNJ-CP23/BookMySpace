@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using BookMySpace.Services;
 
+[Authorize(Roles = "Admin")]
 [ApiController]
 [Route("api/[controller]")]
 public class UsersController : ControllerBase
@@ -16,6 +17,18 @@ public class UsersController : ControllerBase
     {
         _db = db;
         _authService = authService;
+    }
+    
+    [AllowAnonymous]
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginDTO dto)
+    {
+        var result = await _authService.LoginAsync(dto.Email, dto.Password);
+
+        if (result == null)
+            return Unauthorized(new { message = "Invalid credentials" });
+
+        return Ok(result);
     }
     
     [HttpGet]
