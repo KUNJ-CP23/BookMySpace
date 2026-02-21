@@ -14,11 +14,6 @@ namespace BookMySpace.Models
         
         public ICollection<User> Users { get; set; }
     }
-    // public class AddUpdateRoleDTO
-    // {
-    //     // [Required, MaxLength(50)]
-    //     public string RoleName { get; set; }
-    // }
 }
 public class AddUpdateRoleDTO
 {
