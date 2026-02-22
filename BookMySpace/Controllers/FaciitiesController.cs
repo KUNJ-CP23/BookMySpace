@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using BookMySpace.Data;
 using BookMySpace.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -11,6 +12,16 @@ public class FacilitiesController : ControllerBase
 {
     private readonly AppDbContext _db;
     public FacilitiesController(AppDbContext db) => _db = db;
+    
+    [HttpGet("{id}/images")]
+    public async Task<IActionResult> GetImages(int id)
+    {
+        var images = await _db.FacilityImages
+            .Where(i => i.FacilityId == id)
+            .ToListAsync();
+
+        return Ok(images);
+    }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
@@ -45,13 +56,20 @@ public class FacilitiesController : ControllerBase
         return Ok(f);
     }
 
+    [Authorize(Roles = "Admin,Owner")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, AddUpdateFacilityDTO dto)
     {
         var f = await _db.Facilities.FindAsync(id);
         if (f == null) return NotFound();
 
-        f.UserId = dto.UserId;
+        var role = User.FindFirst(ClaimTypes.Role)?.Value;
+        var userId = int.Parse(User.FindFirst("UserId").Value);
+
+        // 🔐 Owner can edit only their facility
+        if (role == "Owner" && f.UserId != userId)
+            return Forbid();
+
         f.Name = dto.Name;
         f.Contact = dto.Contact;
         f.Description = dto.Description;

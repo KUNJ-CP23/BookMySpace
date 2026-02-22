@@ -69,37 +69,37 @@ public class FacilityImagesController : ControllerBase
         return Ok(img);
     }
     
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromForm] AddUpdateFacilityImageDTO dto)
-    {
-        if (dto.FacilityId <= 0)
-            return BadRequest(new { message = "FacilityId is required" });
-
-        var existing = await _db.FacilityImages.FindAsync(id);
-        if (existing == null)
-            return NotFound(new { message = "Facility image not found" });
-
-        // Replace file only if new file is provided
-        if (dto.ImageFile != null && dto.ImageFile.Length > 0)
-        {
-            // delete old file
-            _fileService.DeleteFile(existing.ImageUrl);
-
-            // upload new file
-            existing.ImageUrl = await _fileService.UploadFileAsync(dto.ImageFile, "FacilityImages");
-        }
-        else
-        {
-            return BadRequest(new { message = "ImageFile is required to update image" });
-        }
-
-        // update FacilityId also
-        existing.FacilityId = dto.FacilityId;
-
-        await _db.SaveChangesAsync();
-
-        return Ok(existing);
-    }
+    // [HttpPut("{id:int}")]
+    // public async Task<IActionResult> Update(int id, [FromForm] AddUpdateFacilityImageDTO dto)
+    // {
+    //     if (dto.FacilityId <= 0)
+    //         return BadRequest(new { message = "FacilityId is required" });
+    //
+    //     var existing = await _db.FacilityImages.FindAsync(id);
+    //     if (existing == null)
+    //         return NotFound(new { message = "Facility image not found" });
+    //
+    //     // Replace file only if new file is provided
+    //     if (dto.ImageFile != null && dto.ImageFile.Length > 0)
+    //     {
+    //         // delete old file
+    //         _fileService.DeleteFile(existing.ImageUrl);
+    //
+    //         // upload new file
+    //         existing.ImageUrl = await _fileService.UploadFileAsync(dto.ImageFile, "FacilityImages");
+    //     }
+    //     else
+    //     {
+    //         return BadRequest(new { message = "ImageFile is required to update image" });
+    //     }
+    //
+    //     // update FacilityId also
+    //     existing.FacilityId = dto.FacilityId;
+    //
+    //     await _db.SaveChangesAsync();
+    //
+    //     return Ok(existing);
+    // }
     
     
     [HttpDelete("{id}")]
