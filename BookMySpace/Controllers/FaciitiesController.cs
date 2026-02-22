@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-[Authorize(Roles = "Owner,Admin")]
+[Authorize(Roles = "Owner,Admin,Customer")]
 [ApiController]
 [Route("api/[controller]")]
 public class FacilitiesController : ControllerBase
