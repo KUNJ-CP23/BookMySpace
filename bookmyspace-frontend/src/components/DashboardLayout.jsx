@@ -1,18 +1,41 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, Outlet } from "react-router-dom";
 
-export default function DashboardLayout({ children }) {
+export default function DashboardLayout() {
   const location = useLocation();
 
+  // 🔐 Get role
+  const user = JSON.parse(localStorage.getItem("user"));
+  const role = user?.role;
+  console.log("USER:", user);
+console.log("ROLE:", role);
+
+  // 🎯 Role-based navigation
   const nav = [
     { name: "Dashboard", path: "/" },
-    { name: "Users", path: "/users" },
-    { name: "Facilities", path: "/facilities" },
-    { name: "Bookings", path: "/bookings" },
-    { name: "Payment", path: "/payment" },
-    { name: "Roles", path: "/roles" },
-    { name: "Reviews", path: "/reviews" },  
+
+    // Admin only
+    ...(role === "Admin"
+      ? [
+          { name: "Users", path: "/users" },
+          { name: "Roles", path: "/roles" },
+          { name: "Payment", path: "/payment" }
+        ]
+      : []),
+
+    // Owner + Admin
+    ...(role === "Owner" || role === "Admin" || role === "Customer"
+      ? [{ name: "Facilities", path: "/facilities" }]
+      : []),
+
+    // Customer + Admin
+    ...(role === "Customer" || role === "Admin"
+      ? [{ name: "Bookings", path: "/bookings" }]
+      : []),
+
+    // Common
+    { name: "Reviews", path: "/reviews" },
     { name: "Documents", path: "/documents" },
-    { name: "FacilityImages", path: "/facility-images" },
+    { name: "FacilityImages", path: "/facility-images" }
   ];
 
   return (
@@ -21,12 +44,22 @@ export default function DashboardLayout({ children }) {
       <div className="sticky top-0 z-50 border-b border-zinc-800 bg-zinc-950/70 backdrop-blur">
         <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
           <h1 className="text-lg font-semibold tracking-wide">
-            BookMySpace <span className="text-zinc-400 font-normal">Admin</span>
+            BookMySpace{" "}
+            <span className="text-zinc-400 font-normal">
+              {role}
+            </span>
           </h1>
 
-          <div className="text-sm text-zinc-400">
-            Backend: <span className="text-zinc-200">.NET Web API</span>
-          </div>
+          <button
+            onClick={() => {
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+              window.location.href = "/login";
+            }}
+            className="text-sm text-red-400 hover:text-red-500"
+          >
+            Logout
+          </button>
         </div>
       </div>
 
@@ -63,10 +96,12 @@ export default function DashboardLayout({ children }) {
         {/* Page Content */}
         <main className="col-span-12 md:col-span-9 lg:col-span-10">
           <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
-            {children}
+            {/* 🔥 THIS IS IMPORTANT */}
+            <Outlet />
           </div>
         </main>
       </div>
     </div>
   );
 }
+

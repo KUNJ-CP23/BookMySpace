@@ -13,24 +13,30 @@ export default function Users() {
   });
   const [editUserId, setEditUserId] = useState(null);
 
-  useEffect(() => {
-    //fetch users
-    API.get("/Users")
-      .then((res) => setUsers(res.data))
-      .catch((err) => console.log("Users Error:", err));
+  // 🔹 Fetch users & roles
+  const fetchData = async () => {
+    try {
+      const usersRes = await API.get("/Users");
+      const rolesRes = await API.get("/Roles");
 
-    //fetch roles
-    API.get("/Roles")
-      .then((res) => setRoles(res.data))
-      .catch((err) => console.log("Roles Error:", err));
+      setUsers(usersRes.data);
+      setRoles(rolesRes.data);
+
+    } catch (err) {
+      console.log("Fetch Error:", err.response?.data || err);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
-  //this is for handling form input changes
+  // 🔹 Handle input change
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // Start editing user
+  // 🔹 Start edit
   const startEditUser = (user) => {
     setEditUserId(user.userId);
     setForm({
@@ -42,150 +48,151 @@ export default function Users() {
     });
   };
 
-  //add user
+  // 🔹 Add user
   const addUser = async () => {
     try {
       await API.post("/Users", {
-        fullName: form.fullName,
-        email: form.email,
-        password: form.password,
-        phone: form.phone,
+        ...form,
         roleId: parseInt(form.roleId)
       });
 
-      // Clear form
-      setForm({
-        fullName: "",
-        email: "",
-        password: "",
-        phone: "",
-        roleId: ""
-      });
-
-      // Refresh user list
-      const res = await API.get("/Users");
-      setUsers(res.data);
+      setForm({ fullName: "", email: "", password: "", phone: "", roleId: "" });
+      fetchData();
 
     } catch (err) {
-      console.log("Add User Error:", err.response?.data || err);
+      console.log("Add Error:", err.response?.data || err);
       alert("User creation failed");
     }
   };
 
-  // Save updated user
+  // 🔹 Update user
   const saveUpdatedUser = async () => {
     try {
       await API.put(`/Users/${editUserId}`, {
-        fullName: form.fullName,
-        email: form.email,
+        ...form,
         password: form.password || "123456",
-        phone: form.phone,
         roleId: parseInt(form.roleId)
       });
 
       setEditUserId(null);
       setForm({ fullName: "", email: "", password: "", phone: "", roleId: "" });
-
-      const res = await API.get("/Users");
-      setUsers(res.data);
+      fetchData();
 
     } catch (err) {
-      console.log("Update User Error:", err.response?.data || err);
+      console.log("Update Error:", err.response?.data || err);
       alert("Update failed");
     }
   };
 
+  // 🔹 Delete user
   const deleteUser = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this user?")) return;
+    if (!window.confirm("Delete this user?")) return;
 
     try {
       await API.delete(`/Users/${id}`);
-
-      const res = await API.get("/Users");
-      setUsers(res.data);
-
+      fetchData();
     } catch (err) {
-      console.log("Delete User Error:", err.response?.data || err);
+      console.log("Delete Error:", err.response?.data || err);
       alert("Delete failed");
     }
   };
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>Users</h2>
+    <div className="p-6 bg-black min-h-screen text-white">
+      <h2 className="text-2xl font-bold mb-6">Users</h2>
 
-      <h3 style={{ marginTop: 20 }}>Add User</h3>
-      <div style={{ marginBottom: 20 }}>
-        <input
-          name="fullName"
-          placeholder="Full Name"
-          value={form.fullName}
-          onChange={handleChange}
-          style={{ display: "block", marginBottom: 8 }}
-        />
+      {/* 🔹 FORM */}
+      <div className="bg-gray-900 p-6 rounded-xl shadow mb-8 border border-gray-800">
+        <h3 className="text-lg font-semibold mb-4">
+          {editUserId ? "Edit User" : "Add User"}
+        </h3>
 
-        <input
-          name="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          style={{ display: "block", marginBottom: 8 }}
-        />
+        <div className="grid grid-cols-2 gap-4">
+          <input
+            name="fullName"
+            placeholder="Full Name"
+            value={form.fullName}
+            onChange={handleChange}
+            className="p-2 rounded bg-gray-800 border border-gray-700"
+          />
 
-        <input
-          name="password"
-          type="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          style={{ display: "block", marginBottom: 8 }}
-        />
+          <input
+            name="email"
+            placeholder="Email"
+            value={form.email}
+            onChange={handleChange}
+            className="p-2 rounded bg-gray-800 border border-gray-700"
+          />
 
-        <input
-          name="phone"
-          placeholder="Phone"
-          value={form.phone}
-          onChange={handleChange}
-          style={{ display: "block", marginBottom: 8 }}
-        />
+          <input
+            name="password"
+            type="password"
+            placeholder="Password"
+            value={form.password}
+            onChange={handleChange}
+            className="p-2 rounded bg-gray-800 border border-gray-700"
+          />
 
-        <select
-          name="roleId"
-          value={form.roleId}
-          onChange={handleChange}
-          style={{ display: "block", marginBottom: 8 }}
+          <input
+            name="phone"
+            placeholder="Phone"
+            value={form.phone}
+            onChange={handleChange}
+            className="p-2 rounded bg-gray-800 border border-gray-700"
+          />
+
+          <select
+            name="roleId"
+            value={form.roleId}
+            onChange={handleChange}
+            className="p-2 rounded bg-gray-800 border border-gray-700 col-span-2"
+          >
+            <option value="">Select Role</option>
+            {roles.map((r) => (
+              <option key={r.roleId} value={r.roleId}>
+                {r.roleName}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <button
+          onClick={editUserId ? saveUpdatedUser : addUser}
+          className="mt-4 bg-blue-600 px-4 py-2 rounded hover:bg-blue-700"
         >
-          <option value="">Select Role</option>
-          {roles.map((r) => (
-            <option key={r.roleId} value={r.roleId}>
-              {r.roleName}
-            </option>
-          ))}
-        </select>
-
-        {editUserId ? (
-          <button onClick={saveUpdatedUser}>Update User</button>
-        ) : (
-          <button onClick={addUser}>Add User</button>
-        )}
+          {editUserId ? "Update User" : "Add User"}
+        </button>
       </div>
 
-      {users.map((u) => (
-        <div key={u.userId} style={{ border: "1px solid #ccc", padding: 10, marginBottom: 10 }}>
-          <p><b>Name:</b> {u.fullName}</p>
-          <p><b>Email:</b> {u.email}</p>
-          <p><b>Role:</b> {u.role?.roleName}</p>
-          <button onClick={() => startEditUser(u)} style={{ marginTop: 8 }}>
-            Edit
-          </button>
-          <button 
-            onClick={() => deleteUser(u.userId)} 
-            style={{ marginLeft: 10, background: "crimson", color: "white" }}
+      {/* 🔹 USER LIST */}
+      <div className="grid gap-4">
+        {users.map((u) => (
+          <div
+            key={u.userId}
+            className="bg-gray-900 p-4 rounded-lg border border-gray-800"
           >
-            Delete
-          </button>
-        </div>
-      ))}
+            <p><b>Name:</b> {u.fullName}</p>
+            <p><b>Email:</b> {u.email}</p>
+            <p><b>Role:</b> {u.role?.roleName}</p>
+
+            <div className="mt-3">
+              <button
+                onClick={() => startEditUser(u)}
+                className="bg-yellow-500 px-3 py-1 rounded text-black mr-2"
+              >
+                Edit
+              </button>
+
+              <button
+                onClick={() => deleteUser(u.userId)}
+                className="bg-red-600 px-3 py-1 rounded"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
