@@ -4,44 +4,100 @@ import API from "../services/api";
 export default function Facilities() {
   const [facilities, setFacilities] = useState([]);
   const [users, setUsers] = useState([]);
+  const [selectedFacility, setSelectedFacility] = useState(null);
+  const [images, setImages] = useState([]);
+  const [editFacilityId, setEditFacilityId] = useState(null);
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const role = user?.role;
+
   const [form, setForm] = useState({
     name: "",
     contact: "",
     description: "",
     city: "",
     address: "",
-    categoty: "",
+    category: "",
     pricePerHour: "",
     isGovOwned: false,
     userId: ""
   });
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const res = await API.get("/Facilities");
+      setFacilities(res.data);
+
+      const userRes = await API.get("/Users").catch(() => null);
+      if (userRes) setUsers(userRes.data);
+
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setForm({
+      ...form,
+      [name]: type === "checkbox" ? checked : value
+    });
+  };
+
+  // 🔥 VIEW DETAILS (IMAGES)
+  const viewDetails = async (facility) => {
+    setSelectedFacility(facility);
+
+    try {
+      const res = await API.get(`/Facilities/${facility.facilityId}/images`);
+      setImages(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // 🔥 ADD
+  const addFacility = async () => {
+    try {
+      await API.post("/Facilities", {
+        ...form,
+        pricePerHour: parseFloat(form.pricePerHour),
+        userId: parseInt(form.userId)
+      });
+
+      setForm({
+        name: "",
+        contact: "",
+        description: "",
+        city: "",
+        address: "",
+        category: "",
+        pricePerHour: "",
+        isGovOwned: false,
+        userId: ""
+      });
+
+      fetchData();
+    } catch (err) {
+      alert("Failed to add facility");
+    }
+  };
+
+  // 🔥 EDIT
   const startEditFacility = (f) => {
     setEditFacilityId(f.facilityId);
-    setForm({
-      name: f.name || "",
-      contact: f.contact || "",
-      description: f.description || "",
-      city: f.city || "",
-      address: f.address || "",
-      category: f.category || "",
-      pricePerHour: f.pricePerHour || "",
-      isGovOwned: f.isGovOwned || false,
-      userId: f.userId || ""
-    });
+    setForm({ ...f });
   };
 
   const updateFacility = async () => {
     try {
       await API.put(`/Facilities/${editFacilityId}`, {
-        name: form.name,
-        contact: form.contact,
-        description: form.description,
-        city: form.city,
-        address: form.address,
-        category: form.category,
-        pricePerHour: parseFloat(form.pricePerHour),
-        isGovOwned: form.isGovOwned,
-        userId: parseInt(form.userId)
+        ...form,
+        pricePerHour: parseFloat(form.pricePerHour)
       });
 
       setEditFacilityId(null);
@@ -57,163 +113,113 @@ export default function Facilities() {
         userId: ""
       });
 
-      const res = await API.get("/Facilities");
-      setFacilities(res.data);
-
-    } catch (err) {
-      console.log("Update Facility Error", err.response?.data || err);
+      fetchData();
+    } catch {
       alert("Update failed");
     }
   };
 
+  // 🔥 DELETE
   const deleteFacility = async (id) => {
     if (!window.confirm("Delete this facility?")) return;
 
-    try {
-      await API.delete(`/Facilities/${id}`);
-
-      const res = await API.get("/Facilities");
-      setFacilities(res.data);
-
-    } catch (err) {
-      console.log("Delete Facility Error", err.response?.data || err);
-      alert("Delete failed");
-    }
+    await API.delete(`/Facilities/${id}`);
+    fetchData();
   };
-
-  const [editFacilityId, setEditFacilityId] = useState(null);
-
-  useEffect(() => {
-    API.get("/Facilities")
-      .then((res) => setFacilities(res.data))
-      .catch((err) => console.log("Facilities Error:", err));
-    //fetch users
-    API.get("/Users")
-      .then((res) => setUsers(res.data))
-      .catch((err) => console.log("Users Error:", err));
-  }, []);
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setForm({
-      ...form,
-      [name]: type === "checkbox" ? checked : value
-    });
-  };
-
-  const addFacility = async () => {
-    try {
-      await API.post("/Facilities", {
-        name: form.name,
-        contact: form.contact,
-        description: form.description,
-        city: form.city,
-        address: form.address,
-        category: form.category,
-        pricePerHour: parseFloat(form.pricePerHour),
-        isGovOwned: form.isGovOwned,
-        userId: parseInt(form.userId)
-      });
-
-      setForm({
-        name: "",
-        contact: "",
-        description: "",
-        city: "",
-        address: "",
-        category: "",
-        pricePerHour: "",
-        isGovOwned: false,
-        userId: ""
-      });
-
-      const res = await API.get("/Facilities");
-      setFacilities(res.data);
-
-    } catch (err) {
-      console.log("Add Facility Error:", err.response?.data || err);
-      alert("Failed to add facility");
-    }
-  };
-
-
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>Facilities</h2>
+    <div className="text-white">
+      <h2 className="text-2xl font-bold mb-6">Facilities</h2>
 
-      <h3>Add Facility</h3>
+      {/* 🔥 ADD / EDIT FORM (ADMIN + OWNER ONLY) */}
+      {(role === "Admin" || role === "Owner") && (
+        <div className="bg-zinc-900 p-4 rounded-xl mb-6 border border-zinc-800">
+          <h3 className="mb-3">{editFacilityId ? "Edit" : "Add"} Facility</h3>
 
-      <input name="name" placeholder="Facility Name" value={form.name} onChange={handleChange} />
-      <input name="contact" placeholder="Contact" value={form.contact} onChange={handleChange} />
-      <input name="description" placeholder="Description" value={form.description} onChange={handleChange} />
-      <input name="city" placeholder="City" value={form.city} onChange={handleChange} />
-      <input name="address" placeholder="Address" value={form.address} onChange={handleChange} />
-      <input name="category" placeholder="Category" value={form.category} onChange={handleChange} />
-      <input name="pricePerHour" placeholder="Price Per Hour" value={form.pricePerHour} onChange={handleChange} />
+          <div className="grid grid-cols-2 gap-3">
+            <input name="name" placeholder="Name" value={form.name} onChange={handleChange} className="input" />
+            <input name="contact" placeholder="Contact" value={form.contact} onChange={handleChange} className="input" />
+            <input name="city" placeholder="City" value={form.city} onChange={handleChange} className="input" />
+            <input name="address" placeholder="Address" value={form.address} onChange={handleChange} className="input" />
+            <input name="category" placeholder="Category" value={form.category} onChange={handleChange} className="input" />
+            <input name="pricePerHour" placeholder="Price" value={form.pricePerHour} onChange={handleChange} className="input" />
+          </div>
 
-      <label>
-        <input
-          type="checkbox"
-          name="isGovOwned"
-          checked={form.isGovOwned}
-          onChange={handleChange}
-        />
-        Government Owned
-      </label>
-      <select name="userId" value={form.userId} onChange={handleChange}>
-        <option value="">Select Owner</option>
-        {users.map(u => (
-          <option key={u.userId} value={u.userId}>
-            {u.fullName}
-          </option>
-        ))}
-      </select>
-
-      {editFacilityId ? (
-        <button onClick={updateFacility}>Update Facility</button>
-      ) : (
-        <button onClick={addFacility}>Add Facility</button>
+          <button
+            onClick={editFacilityId ? updateFacility : addFacility}
+            className="mt-3 bg-blue-600 px-4 py-2 rounded"
+          >
+            {editFacilityId ? "Update" : "Add"}
+          </button>
+        </div>
       )}
 
-      {facilities.length === 0 ? (
-        <p>No facilities found</p>
-      ) : (
-        facilities.map((f) => (
-          <div
-            key={f.facilityId}
-            style={{
-              border: "1px solid #ccc",
-              padding: 12,
-              marginBottom: 12,
-              borderRadius: 6
-            }}
-          >
-            <p><b>Name:</b> {f.name}</p>
-            <p><b>Contact:</b> {f.contact}</p>
-            <p><b>Description:</b> {f.description}</p>
-            <p><b>City:</b> {f.city}</p>
-            <p><b>Address:</b> {f.address}</p>
-            <p><b>Category:</b> {f.category}</p>
-            <p>
-              <b>Price / Hour:</b>{" "}
-              ₹{Number(f.pricePerHour).toLocaleString("en-IN")}
-            </p>
-            <p><b>Ownership:</b> {f.isGovOwned ? "Government" : "Private"}</p>
-            <p><b>UserId:</b> {f.userId}</p>
+      {/* 🔥 LIST */}
+      <div className="grid md:grid-cols-3 gap-4">
+        {facilities.map((f) => (
+          <div key={f.facilityId} className="bg-zinc-900 p-4 rounded-xl border border-zinc-800">
+            <h3 className="font-bold">{f.name}</h3>
+            <p className="text-sm text-gray-400">{f.city}</p>
+            <p>₹{f.pricePerHour}</p>
 
-            <button onClick={() => startEditFacility(f)} style={{ marginRight: 10, background: "yellow", color: "black"}}>
-              Edit
-            </button>
+            <div className="mt-3 flex gap-2">
+              <button
+                onClick={() => viewDetails(f)}
+                className="bg-blue-600 px-3 py-1 rounded"
+              >
+                View
+              </button>
 
-            <button 
-              onClick={() => deleteFacility(f.facilityId)} 
-              style={{ background: "crimson", color: "white" }}
+              {(role === "Admin" || role === "Owner") && (
+                <>
+                  <button
+                    onClick={() => startEditFacility(f)}
+                    className="bg-yellow-500 px-3 py-1 rounded text-black"
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    onClick={() => deleteFacility(f.facilityId)}
+                    className="bg-red-600 px-3 py-1 rounded"
+                  >
+                    Delete
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* 🔥 MODAL */}
+      {selectedFacility && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center">
+          <div className="bg-zinc-900 p-6 rounded-xl w-[600px]">
+            <h2 className="text-xl font-bold mb-3">{selectedFacility.name}</h2>
+
+            <div className="grid grid-cols-3 gap-2">
+              {images.length > 0 ? (
+                images.map((img) => (
+                  <img
+                    key={img.imageId}
+                    src={img.imageUrl}
+                    className="h-24 w-full object-cover rounded"
+                  />
+                ))
+              ) : (
+                <p>No images</p>
+              )}
+            </div>
+
+            <button
+              onClick={() => setSelectedFacility(null)}
+              className="mt-4 bg-red-600 px-4 py-2 rounded"
             >
-              Delete
+              Close
             </button>
           </div>
-        ))
+        </div>
       )}
     </div>
   );

@@ -195,7 +195,6 @@ export default function Documents() {
 
               <p><b>Uploaded:</b> {new Date(d.uploadedAt).toLocaleString()}</p>
 
-              <button onClick={() => startEdit(d)}>Edit</button>
               <button onClick={() => deleteDocument(d.documentId)} style={{ marginLeft: 10 }}>
                 Delete
               </button>
