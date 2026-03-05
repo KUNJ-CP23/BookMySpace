@@ -17,7 +17,7 @@ public class AuthService : IAuthService
         _configuration = configuration;
     }
 
-    // 🔐 Generate JWT Token
+    // Generate JWT Token
     public string GenerateJwtToken(User user)
     {
         var jwtSettings = _configuration.GetSection("Jwt");
@@ -32,7 +32,7 @@ public class AuthService : IAuthService
         {
             new Claim(ClaimTypes.Name, user.FullName),
             new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role.RoleName), // ✅ FIXED
+            new Claim(ClaimTypes.Role, user.Role.RoleName), // fix karelu
             new Claim("UserId", user.UserId.ToString())
         };
 
@@ -49,12 +49,12 @@ public class AuthService : IAuthService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    // 🔑 Login Logic
+    // Login Logic
     public async Task<object?> LoginAsync(string username, string password)
     {
         var user = await _context.Users
-            .Include(u => u.Role) // ✅ IMPORTANT (to get RoleName)
-            .FirstOrDefaultAsync(u => u.Email == username && u.Password == password); // ✅ FIXED
+            .Include(u => u.Role) // IMPORTANT (to get RoleName)
+            .FirstOrDefaultAsync(u => u.Email == username && u.Password == password); // FIXED
 
         if (user == null)
             return null;
@@ -69,7 +69,7 @@ public class AuthService : IAuthService
                 user.UserId,
                 user.FullName,
                 user.Email,
-                Role = user.Role.RoleName // ✅ CLEAN ROLE
+                Role = user.Role.RoleName // CLEAN ROLE
             }
         };
     }
