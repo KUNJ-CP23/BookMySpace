@@ -19,11 +19,22 @@ public class PaymentsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        return Ok(await _db.Payments
+        var payments = await _db.Payments
             .Include(p => p.Booking)
             .ThenInclude(b => b.Facility)
             .Include(p => p.User)
-            .ToListAsync());
+            .Select(p => new
+            {
+                User = p.User.FullName,
+                Facility = p.Booking.Facility.Name,
+                Amount = p.Amount,
+                Method = p.PaymentMethod,
+                Status = p.PaymentStatus,
+                Date = p.Booking.StartDate
+            })
+            .ToListAsync();
+
+        return Ok(payments);
     }
 
     [HttpGet("{id}")]
@@ -42,9 +53,8 @@ public class PaymentsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(AddUpdatePaymentDTO dto)
     {
-        
-        // ✅ ADD THIS LINE (VERY IMPORTANT)
         dto.OfflineReferenceNumber = null;
+
         var booking = await _db.Bookings
             .Include(b => b.Facility)
             .FirstOrDefaultAsync(b => b.BookingId == dto.BookingId);
@@ -52,23 +62,29 @@ public class PaymentsController : ControllerBase
         if (booking == null)
             return NotFound(new { message = "Booking not found" });
 
-        // Govt facility => NO payments table entry
-        if (booking.Facility != null && booking.Facility.IsGovOwned)
-            return BadRequest(new { message = "Government owned facility payments are offline. Payment entry not allowed." });
+        // Prevent duplicate payment
+        var paymentExists = await _db.Payments
+            .AnyAsync(p => p.BookingId == dto.BookingId);
 
-        //Private facility => allow ONLINE payment only (auto set)
+        if (paymentExists)
+            return BadRequest(new { message = "Payment already exists for this booking." });
+
+        // Govt facility => no payment entry
+        if (booking.Facility != null && booking.Facility.IsGovOwned)
+            return BadRequest(new { message = "Government owned facility payments are offline." });
+
         var payment = new Payment
         {
             BookingId = dto.BookingId,
             UserId = dto.UserId,
             Amount = dto.Amount,
 
-            PaymentType = "Online",                 
-            PaymentMethod = dto.PaymentMethod,      // UPI/Card/NetBanking
-            PaymentStatus = "Success",              // (or Pending based on your flow)
+            PaymentType = "Online",
+            PaymentMethod = dto.PaymentMethod,
+            PaymentStatus = "Success",
 
-            TransactionId = dto.TransactionId,      // required for private
-            OfflineReferenceNumber = null,          // always null
+            TransactionId = dto.TransactionId,
+            OfflineReferenceNumber = null,
 
             Remarks = dto.Remarks,
             PaidAt = DateTime.Now
@@ -76,7 +92,6 @@ public class PaymentsController : ControllerBase
 
         _db.Payments.Add(payment);
 
-        // Mark booking paid
         booking.PaymentStatus = "Paid";
 
         await _db.SaveChangesAsync();
